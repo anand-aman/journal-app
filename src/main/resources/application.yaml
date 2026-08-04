@@ -1,7 +1,11 @@
 spring:
   application:
     name: journal-app
-  data:
-    mongodb:
-      uri: ${MONGODB_URI:mongodb://localhost:27017/journal-app}
-      database: journal-app
+
+  mongodb:
+    database: journaldb
+    host: localhost
+    port: 27017
+
+
+#    uri: ${MONGODB_URI:mongodb://localhost:27017/journal-app}

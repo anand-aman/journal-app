@@ -1,6 +1,7 @@
 package com.curiodesk.journalapp.controller;
 
 import com.curiodesk.journalapp.entity.JournalEntry;
+import com.curiodesk.journalapp.service.JournalEntryService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -11,15 +12,19 @@ import java.util.Map;
 @RequestMapping("/journal")
 public class JournalEntryController {
 
-    private Map<Long, JournalEntry> journalEntries = new HashMap<>();
+    private final JournalEntryService journalEntryService;
+
+    public JournalEntryController(JournalEntryService journalEntryService) {
+        this.journalEntryService = journalEntryService;
+    }
 
     @GetMapping
     public List<JournalEntry> getAll() {
-        return journalEntries.values().stream().toList();
+        return journalEntryService.getAllEntries();
     }
 
     @PostMapping
     public void createEntry(@RequestBody JournalEntry myEntry) {
-        journalEntries.put(myEntry.getId(), myEntry);
+        journalEntryService.saveEntry(myEntry);
     }
 }

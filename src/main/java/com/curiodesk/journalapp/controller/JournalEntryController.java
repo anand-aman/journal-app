@@ -24,7 +24,7 @@ public class JournalEntryController {
     }
 
     @PostMapping
-    public void createEntry(@RequestBody JournalEntry myEntry) {
-        journalEntryService.saveEntry(myEntry);
+    public JournalEntry createEntry(@RequestBody JournalEntry myEntry) {
+        return journalEntryService.saveEntry(myEntry);
     }
 }

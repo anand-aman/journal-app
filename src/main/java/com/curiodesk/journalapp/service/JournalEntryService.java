@@ -15,8 +15,8 @@ public class JournalEntryService {
         this.journalEntryRepository = journalEntryRepository;
     }
 
-    public void saveEntry(JournalEntry journalEntry) {
-        journalEntryRepository.save(journalEntry);
+    public JournalEntry saveEntry(JournalEntry journalEntry) {
+        return journalEntryRepository.save(journalEntry);
     }
 
     public List<JournalEntry> getAllEntries() {

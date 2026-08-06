@@ -6,6 +6,7 @@ import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JournalEntryService {
@@ -16,7 +17,8 @@ public class JournalEntryService {
         this.journalEntryRepository = journalEntryRepository;
     }
 
-    public JournalEntry saveEntry(JournalEntry journalEntry) {
+    public JournalEntry createEntry(JournalEntry journalEntry) {
+        journalEntry.setId(null);
         return journalEntryRepository.save(journalEntry);
     }
 
@@ -24,12 +26,12 @@ public class JournalEntryService {
         return journalEntryRepository.findAll();
     }
 
-    public JournalEntry getEntryById(ObjectId journalId) {
-        return journalEntryRepository.findById(journalId).orElse(null);
+    public Optional<JournalEntry> findById(ObjectId journalId) {
+        return journalEntryRepository.findById(journalId);
     }
 
     public JournalEntry updateEntry(ObjectId journalId, JournalEntry entry) {
-        JournalEntry existingEntry = getEntryById(journalId);
+        JournalEntry existingEntry = findById(journalId).orElse(null);
         if (existingEntry != null) {
             existingEntry.setTitle(entry.getTitle());
             existingEntry.setContent(entry.getContent());

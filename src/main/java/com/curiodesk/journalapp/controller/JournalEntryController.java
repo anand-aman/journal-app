@@ -3,12 +3,15 @@ package com.curiodesk.journalapp.controller;
 import com.curiodesk.journalapp.entity.JournalEntry;
 import com.curiodesk.journalapp.service.JournalEntryService;
 import org.bson.types.ObjectId;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/journal")
+@RequestMapping("/api/journal_entries")
 public class JournalEntryController {
 
     private final JournalEntryService journalEntryService;
@@ -18,27 +21,41 @@ public class JournalEntryController {
     }
 
     @GetMapping
-    public List<JournalEntry> getAll() {
-        return journalEntryService.getAllEntries();
+    public ResponseEntity<List<JournalEntry>> getAll() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(journalEntryService.getAllEntries());
     }
 
     @PostMapping
-    public JournalEntry createEntry(@RequestBody JournalEntry myEntry) {
-        return journalEntryService.saveEntry(myEntry);
+    public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry myEntry) {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(journalEntryService.createEntry(myEntry));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
-    @GetMapping("id/{journal-id}")
-    public JournalEntry getEntryById(@PathVariable("journal-id") ObjectId journalId) {
-        return journalEntryService.getEntryById(journalId);
+    @GetMapping("/{journalId}")
+    public ResponseEntity<JournalEntry> getEntryById(@PathVariable ObjectId journalId) {
+        Optional<JournalEntry> journalEntry = journalEntryService.findById(journalId);
+        return journalEntry.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @PutMapping("id/{journal-id}")
-    public JournalEntry updateEntry(@PathVariable("journal-id") ObjectId journalId, @RequestBody JournalEntry entry) {
-        return journalEntryService.updateEntry(journalId, entry);
+    @PutMapping("/{journalId}")
+    public ResponseEntity<JournalEntry> updateEntry(@PathVariable ObjectId journalId,
+                                                    @RequestBody JournalEntry entry) {
+        return Optional.ofNullable(journalEntryService.updateEntry(journalId, entry))
+                .map(updatedEntry -> ResponseEntity.status(HttpStatus.OK).body(updatedEntry))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    @DeleteMapping("id/{journal-id}")
-    public void deleteEntry(@PathVariable("journal-id") ObjectId journalId) {
+    @DeleteMapping("/{journalId}")
+    public ResponseEntity<Void> deleteEntry(@PathVariable ObjectId journalId) {
         journalEntryService.deleteEntry(journalId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

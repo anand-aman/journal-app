@@ -7,3 +7,7 @@ spring:
 #    host: localhost
 #    port: 27017
     uri: mongodb+srv://mongodb:mongodb@mongo-cluster.lyvlifa.mongodb.net/?appName=mongo-cluster
+
+  data:
+    mongodb:
+      auto-index-creation: true

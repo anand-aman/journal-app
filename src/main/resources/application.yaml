@@ -4,8 +4,6 @@ spring:
 
   mongodb:
     database: journaldb
-    host: localhost
-    port: 27017
-
-
-#    uri: ${MONGODB_URI:mongodb://localhost:27017/journal-app}
+#    host: localhost
+#    port: 27017
+    uri: mongodb+srv://mongodb:mongodb@mongo-cluster.lyvlifa.mongodb.net/?appName=mongo-cluster

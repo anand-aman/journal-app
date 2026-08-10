@@ -5,6 +5,7 @@ import com.curiodesk.journalapp.entity.User;
 import com.curiodesk.journalapp.repository.JournalEntryRepository;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +54,8 @@ public class JournalEntryService {
         return user.getJournalEntries();
     }
 
-    public JournalEntry createJournalEntryOfUser(String username, JournalEntry journalEntry) {
+    @Transactional
+    public JournalEntry saveJournalEntryOfUser(String username, JournalEntry journalEntry) {
         User user = userService.findByUsername(username);
         JournalEntry savedJournalEntry = journalEntryRepository.save(journalEntry);
         user.getJournalEntries().add(savedJournalEntry);
@@ -61,7 +63,7 @@ public class JournalEntryService {
         return journalEntryRepository.save(journalEntry);
     }
 
-
+    @Transactional
     public void deleteJournalEntryOfUser(final String username, final ObjectId journalId) {
         User user = userService.findByUsername(username);
         user.getJournalEntries().removeIf(entry -> entry.getId().equals(journalId));

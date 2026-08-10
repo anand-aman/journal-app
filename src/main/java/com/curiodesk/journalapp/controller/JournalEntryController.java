@@ -75,7 +75,7 @@ public class JournalEntryController {
     public ResponseEntity<JournalEntry> createJournalEntryOfUser(@PathVariable String username,
                                                                  @RequestBody JournalEntry payload) {
         try {
-            JournalEntry journalEntry = journalEntryService.createJournalEntryOfUser(username, payload);
+            JournalEntry journalEntry = journalEntryService.saveJournalEntryOfUser(username, payload);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body(journalEntry);

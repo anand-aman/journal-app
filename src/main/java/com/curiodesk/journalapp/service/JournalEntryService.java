@@ -1,6 +1,7 @@
 package com.curiodesk.journalapp.service;
 
 import com.curiodesk.journalapp.entity.JournalEntry;
+import com.curiodesk.journalapp.entity.User;
 import com.curiodesk.journalapp.repository.JournalEntryRepository;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
@@ -12,13 +13,16 @@ import java.util.Optional;
 public class JournalEntryService {
 
     private final JournalEntryRepository journalEntryRepository;
+    private final UserService userService;
 
-    public JournalEntryService(JournalEntryRepository journalEntryRepository) {
+    public JournalEntryService(JournalEntryRepository journalEntryRepository,
+                               UserService userService) {
         this.journalEntryRepository = journalEntryRepository;
+        this.userService = userService;
     }
 
-    public JournalEntry createEntry(JournalEntry journalEntry) {
-        journalEntry.setId(null);
+    public JournalEntry saveEntry(JournalEntry journalEntry) {
+//        journalEntry.setId(null);
         return journalEntryRepository.save(journalEntry);
     }
 
@@ -40,7 +44,38 @@ public class JournalEntryService {
         return null;
     }
 
-    public void deleteEntry(ObjectId journalId) {
+    public void deleteById(ObjectId journalId) {
         journalEntryRepository.deleteById(journalId);
+    }
+
+    public List<JournalEntry> getJournalEntryOfUser(final String username) {
+        User user = userService.findByUsername(username);
+        return user.getJournalEntries();
+    }
+
+    public JournalEntry createJournalEntryOfUser(String username, JournalEntry journalEntry) {
+        User user = userService.findByUsername(username);
+        JournalEntry savedJournalEntry = journalEntryRepository.save(journalEntry);
+        user.getJournalEntries().add(savedJournalEntry);
+        userService.save(user);
+        return journalEntryRepository.save(journalEntry);
+    }
+
+
+    public void deleteJournalEntryOfUser(final String username, final ObjectId journalId) {
+        User user = userService.findByUsername(username);
+        user.getJournalEntries().removeIf(entry -> entry.getId().equals(journalId));
+        userService.save(user);
+        journalEntryRepository.deleteById(journalId);
+    }
+
+    public JournalEntry updateJournalEntryOfUser(final String username, ObjectId journalId, JournalEntry entry) {
+        JournalEntry existingEntry = findById(journalId).orElse(null);
+        if (existingEntry != null) {
+            existingEntry.setTitle(entry.getTitle());
+            existingEntry.setContent(entry.getContent());
+            return saveEntry(existingEntry);
+        }
+        return null;
     }
 }

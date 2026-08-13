@@ -3,9 +3,13 @@ package com.curiodesk.journalapp.service;
 import com.curiodesk.journalapp.entity.User;
 import com.curiodesk.journalapp.repository.UserRepository;
 import org.bson.types.ObjectId;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -13,11 +17,19 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    public User createNewUser(User user) {
+        user.setRoles(new ArrayList<>(List.of("USER")));
+        user.setPassword(Objects.requireNonNull(passwordEncoder.encode(user.getPassword())));
         return userRepository.save(user);
     }
 
@@ -29,11 +41,11 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User updateuser(final String username, final User user) {
+    public User updateUser(final String username, final User user) {
         User userInDb = findByUsername(username);
         if (userInDb != null) {
             userInDb.setUsername(user.getUsername());
-            userInDb.setPassword(user.getPassword());
+            userInDb.setPassword(Objects.requireNonNull(passwordEncoder.encode(user.getPassword())));
             return save(userInDb);
         }
         return null;

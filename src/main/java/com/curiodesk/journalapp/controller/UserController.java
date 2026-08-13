@@ -2,13 +2,11 @@ package com.curiodesk.journalapp.controller;
 
 import com.curiodesk.journalapp.entity.User;
 import com.curiodesk.journalapp.service.UserService;
-import org.bson.types.ObjectId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -26,7 +24,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<String> createUser(@RequestBody User user) {
         try {
-            userService.save(user);
+            userService.createNewUser(user);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
                     .body("User " + user.getUsername() + " has been created");
@@ -38,7 +36,7 @@ public class UserController {
     @PutMapping("/{username}")
     public ResponseEntity<String> updateUser(@PathVariable String username,
                                              @RequestBody User user) {
-        User updatedUser = userService.updateuser(username, user);
+        User updatedUser = userService.updateUser(username, user);
         if (updatedUser != null) {
             return ResponseEntity
                     .status(HttpStatus.OK)

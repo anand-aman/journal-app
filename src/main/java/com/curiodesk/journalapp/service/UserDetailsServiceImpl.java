@@ -2,12 +2,14 @@ package com.curiodesk.journalapp.service;
 
 import com.curiodesk.journalapp.entity.User;
 import com.curiodesk.journalapp.repository.UserRepository;
+import org.jspecify.annotations.NullMarked;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
+@NullMarked
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
@@ -27,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     .build();
             return userDetails;
         }
-        throw new UsernameNotFoundException("User not found");
+        throw new UsernameNotFoundException("User not found with username: " + username);
     }
 
 }

@@ -3,6 +3,8 @@ package com.curiodesk.journalapp.service;
 import com.curiodesk.journalapp.entity.User;
 import com.curiodesk.journalapp.repository.UserRepository;
 import org.bson.types.ObjectId;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,7 @@ public class UserService {
     public User createNewUser(User user) {
         user.setRoles(new ArrayList<>(List.of("USER")));
         user.setPassword(Objects.requireNonNull(passwordEncoder.encode(user.getPassword())));
-        return userRepository.save(user);
+        return save(user);
     }
 
     public List<User> getAll() {
@@ -41,7 +43,9 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User updateUser(final String username, final User user) {
+    public User updateUser(final User user) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final String username = authentication.getName();
         User userInDb = findByUsername(username);
         if (userInDb != null) {
             userInDb.setUsername(user.getUsername());
@@ -49,10 +53,6 @@ public class UserService {
             return save(userInDb);
         }
         return null;
-    }
-
-    public Optional<User> findById(ObjectId journalId) {
-        return userRepository.findById(journalId);
     }
 
     public void deleteById(ObjectId userId) {

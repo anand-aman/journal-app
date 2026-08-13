@@ -22,10 +22,10 @@ public class PublicController {
     @PostMapping("/create-user")
     public ResponseEntity<String> createUser(@RequestBody User user) {
         try {
-            userService.createNewUser(user);
+            User createdUser = userService.createNewUser(user);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body("User " + user.getUsername() + " has been created");
+                    .body("User " + createdUser.getUsername() + " has been created");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

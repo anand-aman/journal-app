@@ -21,11 +21,9 @@ public class UserController {
         return userService.getAll();
     }
 
-
     @PutMapping("/{username}")
-    public ResponseEntity<String> updateUser(@PathVariable String username,
-                                             @RequestBody User user) {
-        User updatedUser = userService.updateUser(username, user);
+    public ResponseEntity<String> updateUser(@RequestBody User user) {
+        User updatedUser = userService.updateUser(user);
         if (updatedUser != null) {
             return ResponseEntity
                     .status(HttpStatus.OK)

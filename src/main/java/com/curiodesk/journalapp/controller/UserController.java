@@ -21,17 +21,6 @@ public class UserController {
         return userService.getAll();
     }
 
-    @PostMapping
-    public ResponseEntity<String> createUser(@RequestBody User user) {
-        try {
-            userService.createNewUser(user);
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body("User " + user.getUsername() + " has been created");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-    }
 
     @PutMapping("/{username}")
     public ResponseEntity<String> updateUser(@PathVariable String username,

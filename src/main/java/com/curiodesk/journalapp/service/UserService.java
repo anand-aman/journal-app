@@ -2,7 +2,6 @@ package com.curiodesk.journalapp.service;
 
 import com.curiodesk.journalapp.entity.User;
 import com.curiodesk.journalapp.repository.UserRepository;
-import org.bson.types.ObjectId;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -55,8 +53,6 @@ public class UserService {
         return null;
     }
 
-    public void deleteById(ObjectId userId) {
-        userRepository.deleteById(userId);
-    }
+
 
 }

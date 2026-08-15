@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -28,7 +30,31 @@ public class UserService {
     }
 
     public User createNewUser(User user) {
-        user.setRoles(new ArrayList<>(List.of("USER")));
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(new ArrayList<>(List.of("USER")));
+        } else {
+            List<String> roles = user.getRoles()
+                    .stream()
+                    .filter(role -> !"ADMIN".equals(role))
+                    .collect(Collectors.toList());
+
+            user.setRoles(
+                    Optional.of(roles)
+                    .filter(r -> r.contains("USER"))
+                    .orElseGet(() -> {
+                        roles.add("USER");
+                        return roles;
+                    })
+            );
+        }
+        user.setPassword(Objects.requireNonNull(passwordEncoder.encode(user.getPassword())));
+        return save(user);
+    }
+
+    public User createAdminUser(User user) {
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(new ArrayList<>(List.of("ADMIN", "USER")));
+        }
         user.setPassword(Objects.requireNonNull(passwordEncoder.encode(user.getPassword())));
         return save(user);
     }

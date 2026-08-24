@@ -1,12 +1,14 @@
 package com.curiodesk.journalapp.controller;
 
+import com.curiodesk.journalapp.api.response.WeatherResponse;
 import com.curiodesk.journalapp.entity.User;
 import com.curiodesk.journalapp.service.UserService;
+import com.curiodesk.journalapp.service.WeatherService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -14,11 +16,11 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {this.userService = userService;}
+    private final WeatherService  weatherService;
 
-    @GetMapping
-    public List<User> getUsers() {
-        return userService.getAll();
+    public UserController(UserService userService, WeatherService weatherService) {
+        this.userService = userService;
+        this.weatherService = weatherService;
     }
 
     @PutMapping
@@ -41,6 +43,21 @@ public class UserController {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> greeting() {
+        WeatherResponse weatherResponse = weatherService.getWeather("Bengaluru");
+        if (weatherResponse != null) {
+            return ResponseEntity.ok("Hello, " + getCurrentUsername() + "! Weather in Bengaluru feels like "
+                    + weatherResponse.current().feelsLike() + "°C");
+        }
+        return ResponseEntity.ok("Hello, " + getCurrentUsername() + "!");
+    }
+
+    private String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 
 }

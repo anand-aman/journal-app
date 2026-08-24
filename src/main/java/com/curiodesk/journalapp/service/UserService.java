@@ -79,6 +79,15 @@ public class UserService {
         return null;
     }
 
-
+    public boolean deleteUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final String username = authentication.getName();
+        User userInDb = findByUsername(username);
+        if (userInDb != null) {
+            userRepository.delete(userInDb);
+            return true;
+        }
+        return false;
+    }
 
 }

@@ -21,7 +21,7 @@ public class UserController {
         return userService.getAll();
     }
 
-    @PutMapping("/{username}")
+    @PutMapping
     public ResponseEntity<String> updateUser(@RequestBody User user) {
         User updatedUser = userService.updateUser(user);
         if (updatedUser != null) {
@@ -30,6 +30,16 @@ public class UserController {
                     .body("User " + updatedUser.getUsername() + " has been updated");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteUser() {
+        boolean isDeleted = userService.deleteUser();
+        if (isDeleted) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
